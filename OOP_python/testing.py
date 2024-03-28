@@ -1,7 +1,13 @@
-import csv
-from item import Item
-from phone import Phone
+import logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%H:%M:%S')
+logging.debug('This is Debug')
+logging.info('This is info')
+logging.warning('This is warning')
+logging.error('This is error')
+logging.critical('This is critical')
 
-item1 = Item("MyItem", 500, 5)
-item1.name = "Other Item"
-print(item1.name)
+import helper
+log_h = logging.FileHandler('testing.log')
+
+fmat = logging.Formatter()
+log_h.setFormatter(fmat)

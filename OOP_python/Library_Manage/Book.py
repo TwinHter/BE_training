@@ -3,17 +3,16 @@ import csv
 class Book:
   __discount = 0.2
   all = []
-  def __init__(self, name: str, language: str, id: str, quantity: 0):
+  def __init__(self, name: str, language: str, price: int, quantity: int):
 
     #Validatetion
-    assert price > 0, f"Wrong price: {price}"
-    assert len(id) != 4, f"Wrond Book ID: {id}"
-    assert quantity > 0, f"Wrong quantityy: {quantity}"
+    assert price >= 0, f"Wrong price: {price}"
+    assert quantity >= 0, f"Wrong quantityy: {quantity}"
     #Assigin value
     self.__name = name
     self.__language = language
-    self.__id = id
     self.__quantity = quantity
+    self.__price = price
     Book.all.append(self)
 
   @property
@@ -49,7 +48,7 @@ class Book:
 
   def true_price(self):
     print(f"Apply discount {__class__.__discount} and language {self.__language}")
-    value = self.__price * __class__.__discount
+    value = self.__price * (1 - __class__.__discount)
     if(self.__language == "English" or self.__language == "Vietnamese"):
       value = value * 0.5
     return value
@@ -64,9 +63,9 @@ class Book:
 class HistoryBook(Book):
   __discount = 0.2
   all = []
-  def __init__(self, name: str, language: str, price: int, release_year: int):
+  def __init__(self, name: str, language: str, price: int, quantity: int, release_year: int):
     super().__init__(
-      name, language, price
+      name, language, price, quantity
     )
     #Validation
     assert release_year <= 2024, f"Wrong release year format: {release_year}"
@@ -88,9 +87,9 @@ class HistoryBook(Book):
 class MusicBook(Book):
   __discount = 0.2
   all = []
-  def __init__(self, name: str, language: str, price: int, band: str):
+  def __init__(self, name: str, language: str, price: int, quantity: int, band: str):
     super().__init__(
-      name, language, price
+      name, language, price, quantity
     )
     #Validation
 
@@ -106,5 +105,4 @@ class MusicBook(Book):
   def show_content(self):
     print(f"This is a book named {self.__name} about {self.__band}")
 
-  
   

@@ -2,24 +2,32 @@ from Book import *
 from collections import defaultdict
 class Account:
   all = []
-  def __init__(self, name: str, id: str, password: str):
+  def __init__(self, name: str, id: str):
     #Validation
-    assert len(id) != 3, f"ID {id} is not valid"
-
+    assert len(id) == 3, f"ID {id} is not valid"
     #Assign
     self.__name = name
     self.__id = id
-    self.__password = password
     Account.all.append(self)
+
+  @property
+  def name(self):
+    return self.__name
+  @property
+  def id(self):
+    return self.__id
+  
+  def __repr__(self):
+    return f"{self.__class__.__name__}. Name: {self.__name}, id: {self.__id}"
 
 
 class Customer(Account):
   all = []
-  borrowBook = defaultdict(str)
-  def __init__(self, name: str, id: str, password: str, membership: int, isBan: False):
-    super().__init__(name, id, password)
+  borrowBook = dict()
+  def __init__(self, name: str, id: str, membership: 0, isBan: False):
+    super().__init__(name, id)
     #Validation
-    assert membership < 0, f"Membership {membership} is less than 0"
+    assert membership >= 0, f"Membership {membership} is less than 0"
     #Assign
 
     self.__membership = membership
@@ -35,19 +43,19 @@ class Customer(Account):
   
   def borrow_book(self, book_item):
     if(book_item.quantity > 0):
-      self.borrowBook.append(book_item.id)
+      self.borrowBook[book_item.name] = 1
       book_item.update_quantity(-1)
-      print(f"{self.__id} had borrowed {book_item.name}")
+      print(f"{self.id} had borrowed {book_item.name}")
     else:
       print(f"Run out of {book_item.name}")
   
   def return_book(self, book_item):
-    self.borrowBook.pop(book_item.id)
+    self.borrowBook.pop(book_item.name)
     book_item.update_quantity(1)
   
   def expand_membership(self, month):
     self.__membership += month
-    print(f"{self.__id}'s membership is: {self.__membership}")
+    print(f"{self.id}'s membership is: {self.__membership}")
   
   def unban_member(self):
     self.__isBan = False
@@ -57,10 +65,13 @@ class Customer(Account):
     self.__isBan = True
     print(f"Customer {self.name} is banned")
 
+  def __repr__(self):
+    return f"{self.__class__.__name__}. Name: {self.name}, id: {self.id}, membership: {self.__membership}, isBan: {self.__isBan}"
+
 class Manager(Account):
   all = []
-  def __init__(self, name: str, id: str, password: str):
-    super().__init__(name, id, password)
+  def __init__(self, name: str, id: str):
+    super().__init__(name, id)
     #Validation
     #Assign
     Manager.all.append(self)
@@ -72,4 +83,7 @@ class Manager(Account):
   def block_customer(self, customer):
     customer.ban_member()
   def unblock_customer(self, customer):
-    customer.unban_member
+    customer.unban_member()
+
+  def __repr__(self):
+    return f"{self.__class__.__name__}. Name: {self.name}, id: {self.id}"

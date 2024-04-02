@@ -11,3 +11,8 @@ class Phone(Item):
 
     # Assign value
     self.broken_phones = broken_phones
+
+    def __repr__(self):
+      return self.name
+
+p1 = Phone('a', 1, 1)

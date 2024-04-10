@@ -1,0 +1,4 @@
+Private Key:
++Foreign key: private key of another table
++Natural key: private key that have relation in real world (phone number, email...) <-> surrogate key
++composite key: a key need 2 attributes

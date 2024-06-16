@@ -98,15 +98,21 @@ def room(request, pk):
 @login_required(login_url='login')
 def createRoom(request):
     form = RoomForm()
+    topics = Topic.objects.all()
     if(request.method == 'POST'):
-        form = RoomForm(request.POST)
-        print(form)
-        if form.is_valid():
-            room = form.save()
-            room.participants.add(request.user)
-            return redirect('home')
+        topic_name = request.POST.get('topic')
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        room = Room.objects.create(
+            host = request.user,
+            topic = topic,
+            name = request.POST.get('name'),
+            description = request.POST.get('description'),
+            created = created,
+        )
+        room.participants.add(request.user)
+        return redirect('home')
         
-    context = {'form':form}
+    context = {'form':form, 'topics':topics, 'act':'Create'}
     return render(request, 'base/room_form.html', context)
 
 @login_required(login_url='login')
@@ -118,12 +124,17 @@ def updateRoom(request, pk):
         return HttpResponse('You are not allowed')
 
     if request.method == 'POST':
-        form = RoomForm(request.POST, instance=room)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
+        topic_name = request.POST.get('topic')
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        room.host = request.user
+        room.topic = topic
+        room.name = request.POST.get('name')
+        room.description = request.POST.get('description')
+        room.participants.add(request.user)
+        room.save()
+        return redirect('home')
     
-    context = {'form': form}
+    context = {'form': form, 'act':'Update'}
     return render(request, 'base/room_form.html', context)
 
 @login_required(login_url='login')
@@ -153,5 +164,14 @@ def userProfile(request, pk):
     user = User.objects.get(id=pk)
     rooms = user.room_set.all()
     room_messages = user.message_set.all()
-    context = {'user':user, 'rooms': rooms, 'room_messages':room_messages}
+    topics = Topic.objects.all()
+    context = {'user':user, 'rooms': rooms, 'room_messages':room_messages, 'topics':topics}
     return render(request, 'base/profile.html', context)
+
+@login_required(login_url='login')
+def updateUser(request, pk):
+    user = User.objects.get(id=pk)
+    if request.method == 'POST':
+        return redirect('profile', pk=pk)
+    context = {'user':user}
+    return render(request, 'base/update-user.html', context)
